@@ -1,0 +1,187 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>StitchMate Tailor Measurement Card Tool</title>
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="app-shell">
+      <header class="hero-card">
+        <div class="brand-block">
+<div class="brand-logo">
+            <img src="assets/logo.png" alt="StitchMate logo" onerror="this.src='assets/logo.svg'" width="72" />
+          </div>          <div>
+            <p class="eyebrow">Local browser tool</p>
+            <h1>StitchMate Tailors</h1>
+            <h2>Measurement Card Tool</h2>
+          </div>
+        </div>
+          
+          <p class="hero-copy">
+            Capture customer measurements, find past records, print readable measurement cards, and export all saved entries to CSV without a server.
+          </p>
+      </header>
+
+        <section class="dashboard-cards">
+          <div class="card summary-card" id="savedRecordsCard" tabindex="0">
+            <div class="card-title">Saved Records</div>
+            <div class="card-value" id="savedCount">0</div>
+          </div>
+          <div class="card summary-card">
+            <div class="card-title">Garment Types</div>
+            <div class="card-value">5</div>
+          </div>
+          <div class="card summary-card">
+            <div class="card-title">Last Record</div>
+            <div class="card-value" id="lastRecord">—</div>
+          </div>
+          <div class="card summary-card" id="newMeasurementCard">
+            <div class="card-title">Storage</div>
+            <div class="card-actions">
+              <div class="card-value">Local</div>
+            </div>
+          </div>
+        </section>
+
+      <main class="content-grid">
+        <!-- <section class="panel form-panel">
+          <div class="panel-head">
+            <h3>Customer Measurement</h3>
+            <p>Click <strong>New Measurement</strong> to add a record using the modal form.</p>
+          </div>
+          <div class="panel-body">
+            <p>Use the <strong>Saved Records</strong> card to view all created records. The Add form opens in a centered modal (80vh) and is scrollable on small screens.</p>
+          </div>
+        </section> -->
+
+        <section class="panel records-panel">
+          <div class="panel-head">
+            <h3>Saved Records</h3>
+            <div class="summary-pill" id="summaryPill">0 records</div>
+          </div>
+
+          <label class="search-box">
+            <span>Search by customer name or phone</span>
+            <input type="search" id="searchInput" placeholder="Type to filter records" />
+          </label>
+
+          <div class="actions-row">
+            <button type="button" id="exportBtn" class="export-btn">Export CSV</button>
+          </div>
+
+          <div id="recordsList" class="records-list"></div>
+        </section>
+      </main>
+    </div>
+
+    <div id="cardModal" class="modal" aria-hidden="true">
+      <div class="modal-overlay" data-close="true"></div>
+      <div class="modal-card modal-regular" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">Printable measurement card</p>
+            <h3 id="modalTitle">Customer Card</h3>
+          </div>
+          <button type="button" id="closeModalBtn" class="icon-btn">×</button>
+        </div>
+        <div class="modal-body">
+          <div id="cardPreview" class="print-card"></div>
+        </div>
+        <div class="modal-actions">
+          <button type="button" id="printCardBtn" class="primary">Print Card</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Add / Edit Form Modal -->
+    <div id="formModal" class="modal" aria-hidden="true">
+      <div class="modal-overlay" data-close="true"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">Add Measurement</p>
+            <h3 id="formModalTitle">New Measurement</h3>
+          </div>
+          <button type="button" id="closeFormModalBtn" class="icon-btn">×</button>
+        </div>
+        <div class="modal-body">
+          <form id="customerForm" novalidate>
+            <div class="form-grid">
+              <label>
+                <span>Customer Name *</span>
+                <input type="text" id="customerName" name="customerName" required />
+              </label>
+
+              <label>
+                <span>Phone Number *</span>
+                <input type="tel" id="phoneNumber" name="phoneNumber" required />
+              </label>
+
+              <label>
+                <span>Record Date *</span>
+                <input type="date" id="recordDate" name="recordDate" required />
+              </label>
+
+              <label>
+                <span>Garment Type *</span>
+                <select id="garmentType" name="garmentType" required>
+                  <option value="">Select garment</option>
+                  <option value="Shirt">Shirt</option>
+                  <option value="Trouser">Trouser</option>
+                  <option value="Kurta">Kurta</option>
+                  <option value="Blouse">Blouse</option>
+                  <option value="Alteration">Alteration</option>
+                </select>
+              </label>
+            </div>
+
+            <div class="measurements-grid">
+              <label><span>Chest (in)</span><input type="number" id="chest" name="chest" step="0.1" min="0" required /></label>
+              <label><span>Waist (in)</span><input type="number" id="waist" name="waist" step="0.1" min="0" required /></label>
+              <label><span>Shoulder (in)</span><input type="number" id="shoulder" name="shoulder" step="0.1" min="0" required /></label>
+              <label><span>Sleeve (in)</span><input type="number" id="sleeve" name="sleeve" step="0.1" min="0" required /></label>
+              <label><span>Length (in)</span><input type="number" id="length" name="length" step="0.1" min="0" required /></label>
+              <label><span>Neck (in)</span><input type="number" id="neck" name="neck" step="0.1" min="0" required /></label>
+              <label><span>Hip (in)</span><input type="number" id="hip" name="hip" step="0.1" min="0" required /></label>
+              <label><span>Inseam (in)</span><input type="number" id="inseam" name="inseam" step="0.1" min="0" required /></label>
+            </div>
+
+            <label class="full-width">
+              <span>Notes</span>
+              <textarea id="notes" name="notes" rows="5" minlength="120" required></textarea>
+              <small>Use fitting notes, style details, or alteration instructions. Minimum 120 characters.</small>
+            </label>
+
+            <div id="formMessage" class="message" role="status" aria-live="polite"></div>
+
+            <div class="button-row">
+              <button type="submit" class="primary">Save Record</button>
+              <button type="button" id="clearFormBtn" class="secondary">Clear Form</button>
+            </div>
+          </form>
+        </div>
+      </div>
+    </div>
+
+    <!-- All Records Modal -->
+    <div id="allRecordsModal" class="modal" aria-hidden="true">
+      <div class="modal-overlay" data-close="true"></div>
+      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="allRecordsTitle">
+        <div class="modal-head">
+          <div>
+            <p class="eyebrow">All Records</p>
+            <h3 id="allRecordsTitle">Saved Measurement Records</h3>
+          </div>
+          <button type="button" id="closeAllRecordsBtn" class="icon-btn">×</button>
+        </div>
+        <div class="modal-body">
+          <div id="allRecordsTableContainer"></div>
+        </div>
+      </div>
+    </div>
+
+    <script src="script.js"></script>
+  </body>
+</html>
