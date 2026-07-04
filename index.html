@@ -13,7 +13,7 @@
 <div class="brand-logo">
             <img src="assets/logo.png" alt="StitchMate logo" onerror="this.src='assets/logo.svg'" width="72" />
           </div>          <div>
-            <p class="eyebrow">Local browser tool</p>
+            <!-- <p class="eyebrow">Local browser tool</p> -->
             <h1>StitchMate Tailors</h1>
             <h2>Measurement Card Tool</h2>
           </div>
@@ -25,7 +25,7 @@
       </header>
 
         <section class="dashboard-cards">
-          <div class="card summary-card" id="savedRecordsCard" tabindex="0">
+          <div class="card summary-card" id="savedRecordsCard">
             <div class="card-title">Saved Records</div>
             <div class="card-value" id="savedCount">0</div>
           </div>
@@ -56,18 +56,22 @@
           </div>
         </section> -->
 
-        <section class="panel records-panel">
-          <div class="panel-head">
-            <h3>Saved Records</h3>
-            <div class="summary-pill" id="summaryPill">0 records</div>
+        <section class="panel records-panel full-screen-records">
+          <div class="records-header row-top">
+            <div>
+              <h3>Saved Records</h3>
+            </div>
+            <div class="records-pill">
+              <span class="summary-pill" id="summaryPill">0 records</span>
+            </div>
           </div>
 
-          <label class="search-box">
-            <span>Search by customer name or phone</span>
-            <input type="search" id="searchInput" placeholder="Type to filter records" />
-          </label>
-
-          <div class="actions-row">
+          <div class="records-header row-bottom">
+            <button type="button" id="newMeasurementBtn" class="primary">Add New Record</button>
+            <label class="search-box compact centered">
+              <!-- <span class="sr-only">Search by customer name or phone</span> -->
+              <input type="search" id="searchInput" placeholder="Search by name or phone" />
+            </label>
             <button type="button" id="exportBtn" class="export-btn">Export CSV</button>
           </div>
 
@@ -98,7 +102,7 @@
     <!-- Add / Edit Form Modal -->
     <div id="formModal" class="modal" aria-hidden="true">
       <div class="modal-overlay" data-close="true"></div>
-      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
+      <div class="modal-card modal-regular" role="dialog" aria-modal="true" aria-labelledby="formModalTitle">
         <div class="modal-head">
           <div>
             <p class="eyebrow">Add Measurement</p>
@@ -155,12 +159,11 @@
             </label>
 
             <div id="formMessage" class="message" role="status" aria-live="polite"></div>
-
-            <div class="button-row">
-              <button type="submit" class="primary">Save Record</button>
-              <button type="button" id="clearFormBtn" class="secondary">Clear Form</button>
-            </div>
           </form>
+        </div>
+        <div class="modal-actions">
+          <button type="submit" form="customerForm" class="primary">Save Record</button>
+          <button type="button" id="clearFormBtn" class="secondary">Clear Form</button>
         </div>
       </div>
     </div>
@@ -168,7 +171,7 @@
     <!-- All Records Modal -->
     <div id="allRecordsModal" class="modal" aria-hidden="true">
       <div class="modal-overlay" data-close="true"></div>
-      <div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="allRecordsTitle">
+      <div class="modal-card modal-fullscreen" role="dialog" aria-modal="true" aria-labelledby="allRecordsTitle">
         <div class="modal-head">
           <div>
             <p class="eyebrow">All Records</p>

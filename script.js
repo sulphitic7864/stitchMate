@@ -113,25 +113,45 @@ function renderRecords() {
     return;
   }
 
-  recordsList.innerHTML = visibleRecords
+  const rows = visibleRecords
     .slice()
     .reverse()
     .map((record) => `
-      <article class="record-card">
-        <div class="record-card-header">
-          <div>
-            <strong>${escapeHtml(record.customerName)}</strong>
-            <div class="record-meta">${escapeHtml(record.recordNumber)} • ${escapeHtml(record.garmentType)} • ${escapeHtml(formatDate(record.recordDate))}</div>
-          </div>
-          <div class="record-actions">
-            <button type="button" class="secondary" data-action="view" data-id="${record.id}">View Card</button>
-            <button type="button" class="primary" data-action="delete" data-id="${record.id}">Delete</button>
-          </div>
-        </div>
-        <div class="record-meta">Phone: ${escapeHtml(record.phoneNumber)}</div>
-      </article>
+      <tr>
+        <td data-label="Record">${escapeHtml(record.recordNumber)}</td>
+        <td data-label="Customer">${escapeHtml(record.customerName)}</td>
+        <td data-label="Phone">${escapeHtml(record.phoneNumber)}</td>
+        <td data-label="Date">${escapeHtml(formatDate(record.recordDate))}</td>
+        <td data-label="Garment">${escapeHtml(record.garmentType)}</td>
+        <td data-label="Actions" class="action-buttons">
+          <button type="button" class="action-button view" data-action="view" data-id="${record.id}" title="View record">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button type="button" class="action-button delete" data-action="delete" data-id="${record.id}" title="Delete record">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M8 6V4h8v2"/></svg>
+          </button>
+        </td>
+      </tr>
     `)
     .join("");
+
+  recordsList.innerHTML = `
+    <table class="records-table">
+      <thead>
+        <tr>
+          <th>Record</th>
+          <th>Customer</th>
+          <th>Phone</th>
+          <th>Date</th>
+          <th>Garment</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        ${rows}
+      </tbody>
+    </table>
+  `;
 }
 
 function escapeHtml(value) {
@@ -390,13 +410,13 @@ function renderAllRecords() {
     .reverse()
     .map((r) => `
       <tr>
-        <td>${escapeHtml(r.recordNumber)}</td>
-        <td>${escapeHtml(r.customerName)}</td>
-        <td>${escapeHtml(r.phoneNumber)}</td>
-        <td>${escapeHtml(formatDate(r.recordDate))}</td>
-        <td>${escapeHtml(r.garmentType)}</td>
-        <td><button data-id="${r.id}" class="secondary view-btn">View Card</button></td>
-        <td><button data-id="${r.id}" class="primary delete-btn">Delete</button></td>
+        <td data-label="Record">${escapeHtml(r.recordNumber)}</td>
+        <td data-label="Customer">${escapeHtml(r.customerName)}</td>
+        <td data-label="Phone">${escapeHtml(r.phoneNumber)}</td>
+        <td data-label="Date">${escapeHtml(formatDate(r.recordDate))}</td>
+        <td data-label="Garment">${escapeHtml(r.garmentType)}</td>
+        <td data-label="Card"><button data-id="${r.id}" class="secondary view-btn">View Card</button></td>
+        <td data-label="Remove"><button data-id="${r.id}" class="primary delete-btn">Delete</button></td>
       </tr>
     `)
     .join("");
@@ -453,7 +473,7 @@ function renderAllRecords() {
 // Hook up UI buttons
 if (newMeasurementBtn) newMeasurementBtn.addEventListener('click', openFormModal);
 if (closeFormModalBtn) closeFormModalBtn.addEventListener('click', closeFormModal);
-if (savedRecordsCard) savedRecordsCard.addEventListener('click', openAllRecordsModal);
+// Removed click handler for Saved Records card per request — clicking the card will no longer open the All Records modal.
 if (closeAllRecordsBtn) closeAllRecordsBtn.addEventListener('click', closeAllRecordsModal);
 if (exportTopBtn) exportTopBtn.addEventListener('click', exportToCsv);
 
