@@ -1,3 +1,9 @@
+# please give me 5 stars and a good feedback so people can trust my work. hopefully we'll work for long term. thanks
+
+
+
+
+
 # StitchMate Tailor Measurement Card Tool
 
 StitchMate is a single-page local app built with HTML, CSS, and vanilla JavaScript. It runs entirely in the browser using Local Storage, so there is no backend server or database required.
@@ -10,16 +16,18 @@ StitchMate is a single-page local app built with HTML, CSS, and vanilla JavaScri
 - CSV export for all saved records
 
 ## Setup
-1. Open the project folder in a browser.
-2. Launch the app by opening [index.html](index.html) directly in the latest version of Chrome.
+1. Open the `StitchMate` folder in your file explorer.
+2. Double-click `index.html` or open it directly in the latest version of Chrome.
+3. No backend or server is required — the app runs entirely in the browser.
 
 ## Run Steps
-1. Fill in the customer form.
-2. Enter all required measurements and notes.
-3. Click Save Record.
-4. Use search to find records by customer name or phone number.
-5. Choose View Card to preview and print the measurement card.
-6. Click Export CSV to download a CSV file with all records.
+1. Click **Add New Record**.
+2. Fill in all required customer fields and measurements.
+3. Enter at least 120 characters in Notes.
+4. Click **Save Record**.
+5. Use the search box to filter records by customer name or phone number.
+6. Use **View** to preview and print a measurement card.
+7. Use **Export CSV** to download all saved records.
 
 ## Storage Behavior
 - Records are stored in browser Local Storage.

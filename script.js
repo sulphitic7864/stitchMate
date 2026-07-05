@@ -14,11 +14,10 @@ const modalTitle = document.getElementById("modalTitle");
 
 // Dashboard and modals elements
 const newMeasurementBtn = document.getElementById("newMeasurementBtn");
-const exportTopBtn = document.getElementById("exportTopBtn");
-const savedRecordsCard = document.getElementById("savedRecordsCard");
 const savedCountEl = document.getElementById("savedCount");
 const lastRecordEl = document.getElementById("lastRecord");
 const formModal = document.getElementById("formModal");
+const formModalTitle = document.getElementById("formModalTitle");
 const closeFormModalBtn = document.getElementById("closeFormModalBtn");
 const allRecordsModal = document.getElementById("allRecordsModal");
 const closeAllRecordsBtn = document.getElementById("closeAllRecordsBtn");
@@ -26,6 +25,7 @@ const allRecordsTableContainer = document.getElementById("allRecordsTableContain
 
 let records = loadRecords();
 let activeRecord = null;
+let editingRecord = null;
 
 function loadRecords() {
   try {
@@ -126,6 +126,9 @@ function renderRecords() {
         <td data-label="Actions" class="action-buttons">
           <button type="button" class="action-button view" data-action="view" data-id="${record.id}" title="View record">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/><circle cx="12" cy="12" r="3"/></svg>
+          </button>
+          <button type="button" class="action-button edit" data-action="edit" data-id="${record.id}" title="Edit record">
+            <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 20h9"/><path d="M16.5 3.5a2.121 2.121 0 0 1 3 3L7 19l-4 1 1-4 12.5-12.5z"/></svg>
           </button>
           <button type="button" class="action-button delete" data-action="delete" data-id="${record.id}" title="Delete record">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14H6L5 6"/><path d="M10 11v6"/><path d="M14 11v6"/><path d="M8 6V4h8v2"/></svg>
@@ -304,9 +307,7 @@ form.addEventListener("submit", (event) => {
     return;
   }
 
-  const newRecord = {
-    id: crypto.randomUUID(),
-    recordNumber: generateRecordNumber(),
+  const recordData = {
     customerName: document.getElementById("customerName").value.trim(),
     phoneNumber: document.getElementById("phoneNumber").value.trim(),
     recordDate: document.getElementById("recordDate").value,
@@ -324,11 +325,28 @@ form.addEventListener("submit", (event) => {
     notes,
   };
 
-  records.push(newRecord);
-  saveRecords();
-  renderRecords();
-  resetForm();
-  showMessage(`Saved ${newRecord.recordNumber} successfully.`, "success");
+  if (editingRecord) {
+    const updatedRecord = {
+      ...editingRecord,
+      ...recordData,
+    };
+    records = records.map((item) => (item.id === editingRecord.id ? updatedRecord : item));
+    saveRecords();
+    renderRecords();
+    closeFormModal();
+    showMessage(`Updated ${updatedRecord.recordNumber} successfully.`, "success");
+  } else {
+    const newRecord = {
+      id: crypto.randomUUID(),
+      recordNumber: generateRecordNumber(),
+      ...recordData,
+    };
+    records.push(newRecord);
+    saveRecords();
+    renderRecords();
+    resetForm();
+    showMessage(`Saved ${newRecord.recordNumber} successfully.`, "success");
+  }
 });
 
 clearFormBtn.addEventListener("click", () => {
@@ -346,11 +364,16 @@ recordsList.addEventListener("click", (event) => {
   const record = records.find((item) => item.id === recordId);
   if (!record) return;
 
-  if (button.getAttribute("data-action") === "view") {
+  const action = button.getAttribute("data-action");
+  if (action === "view") {
     openCardModal(record);
   }
 
-  if (button.getAttribute("data-action") === "delete") {
+  if (action === "edit") {
+    openEditForm(record);
+  }
+
+  if (action === "delete") {
     const confirmed = window.confirm(`Delete record ${record.recordNumber} for ${record.customerName}?`);
     if (!confirmed) return;
     records = records.filter((item) => item.id !== record.id);
@@ -371,6 +394,36 @@ cardModal.addEventListener("click", (event) => {
 // Modal controls for form and all-records
 function openFormModal() {
   if (formModal) {
+    editingRecord = null;
+    if (formModalTitle) formModalTitle.textContent = "New Measurement";
+    resetForm();
+    formModal.classList.add("is-open");
+    formModal.setAttribute("aria-hidden", "false");
+  }
+}
+
+function populateFormFields(record) {
+  document.getElementById("customerName").value = record.customerName;
+  document.getElementById("phoneNumber").value = record.phoneNumber;
+  document.getElementById("recordDate").value = record.recordDate;
+  document.getElementById("garmentType").value = record.garmentType;
+  document.getElementById("chest").value = record.measurements.chest;
+  document.getElementById("waist").value = record.measurements.waist;
+  document.getElementById("shoulder").value = record.measurements.shoulder;
+  document.getElementById("sleeve").value = record.measurements.sleeve;
+  document.getElementById("length").value = record.measurements.length;
+  document.getElementById("neck").value = record.measurements.neck;
+  document.getElementById("hip").value = record.measurements.hip;
+  document.getElementById("inseam").value = record.measurements.inseam;
+  document.getElementById("notes").value = record.notes;
+}
+
+function openEditForm(record) {
+  if (formModal) {
+    editingRecord = record;
+    if (formModalTitle) formModalTitle.textContent = "Edit Measurement";
+    populateFormFields(record);
+    clearMessage();
     formModal.classList.add("is-open");
     formModal.setAttribute("aria-hidden", "false");
   }
@@ -380,6 +433,8 @@ function closeFormModal() {
   if (formModal) {
     formModal.classList.remove("is-open");
     formModal.setAttribute("aria-hidden", "true");
+    editingRecord = null;
+    if (formModalTitle) formModalTitle.textContent = "New Measurement";
   }
 }
 
@@ -473,9 +528,7 @@ function renderAllRecords() {
 // Hook up UI buttons
 if (newMeasurementBtn) newMeasurementBtn.addEventListener('click', openFormModal);
 if (closeFormModalBtn) closeFormModalBtn.addEventListener('click', closeFormModal);
-// Removed click handler for Saved Records card per request — clicking the card will no longer open the All Records modal.
 if (closeAllRecordsBtn) closeAllRecordsBtn.addEventListener('click', closeAllRecordsModal);
-if (exportTopBtn) exportTopBtn.addEventListener('click', exportToCsv);
 
 // click overlay to close
 if (formModal) formModal.addEventListener('click', (e) => { if (e.target.hasAttribute('data-close')) closeFormModal(); });
